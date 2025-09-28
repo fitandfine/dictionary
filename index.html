@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Dictionary Lookup</title>
   <style>
-    /* General Reset */
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
@@ -14,9 +13,9 @@
       color: #333;
       min-height: 100vh;
       display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      padding: 40px;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px;
     }
 
     .container {
@@ -26,6 +25,8 @@
       width: 100%;
       max-width: 700px;
       padding: 30px;
+      display: flex;
+      flex-direction: column;
     }
 
     h1 {
@@ -38,7 +39,7 @@
     .search-box {
       display: flex;
       gap: 10px;
-      margin-bottom: 25px;
+      margin-bottom: 20px;
     }
 
     .search-box input {
@@ -71,7 +72,7 @@
       background: #2980b9;
     }
 
-    .results {
+    #results {
       margin-top: 20px;
     }
 
@@ -79,12 +80,15 @@
       font-size: 1.5rem;
       font-weight: bold;
       color: #2c3e50;
-      margin-bottom: 10px;
+      margin-bottom: 5px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
 
     .phonetic {
       color: #666;
-      margin-bottom: 20px;
+      margin-bottom: 15px;
     }
 
     .definition {
@@ -107,10 +111,7 @@
       line-height: 1.5;
     }
 
-    .copy-btn {
-      position: absolute;
-      top: 10px;
-      right: 10px;
+    .copy-btn, .clear-btn {
       background: #eee;
       border: none;
       padding: 5px 10px;
@@ -120,8 +121,22 @@
       transition: 0.2s;
     }
 
-    .copy-btn:hover {
+    .copy-btn:hover, .clear-btn:hover {
       background: #ddd;
+    }
+
+    .copy-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+    }
+
+    .speaker-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1rem;
+      color: #3498db;
     }
 
     .error {
@@ -129,6 +144,19 @@
       font-weight: bold;
       margin-top: 15px;
       text-align: center;
+    }
+
+    .credits {
+      margin-top: 30px;
+      font-size: 0.85rem;
+      text-align: center;
+      color: #666;
+    }
+
+    .clear-btn-container {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 10px;
     }
   </style>
 </head>
@@ -139,7 +167,14 @@
       <input type="text" id="wordInput" placeholder="Enter a word..."/>
       <button onclick="lookupWord()">Search</button>
     </div>
-    <div id="results" class="results"></div>
+    <div class="clear-btn-container">
+      <button class="clear-btn" onclick="clearResults()">Clear</button>
+    </div>
+    <div id="results"></div>
+  </div>
+
+  <div class="credits">
+    Dictionary data by <a href="https://dictionaryapi.dev/" target="_blank">DictionaryAPI.dev</a> | Developed by Anup Chapain
   </div>
 
   <script>
@@ -160,14 +195,18 @@
 
         const entry = data[0];
         const phonetic = entry.phonetic || (entry.phonetics[0] ? entry.phonetics[0].text : "");
+        const audioUrl = entry.phonetics.find(p => p.audio)?.audio || null;
 
         let html = `
-          <div class="word">${entry.word}</div>
+          <div class="word">
+            ${entry.word} 
+            ${audioUrl ? `<button class="speaker-btn" onclick="playAudio('${audioUrl}')">&#128266;</button>` : ""}
+          </div>
           <div class="phonetic">${phonetic || ""}</div>
         `;
 
-        entry.meanings.forEach((meaning, index) => {
-          meaning.definitions.forEach((def, i) => {
+        entry.meanings.forEach((meaning) => {
+          meaning.definitions.forEach((def) => {
             const defText = def.definition;
             html += `
               <div class="definition">
@@ -181,6 +220,7 @@
         });
 
         resultsDiv.innerHTML = html;
+
       } catch (error) {
         resultsDiv.innerHTML = `<p class="error">${error.message}</p>`;
       }
@@ -191,6 +231,21 @@
         alert("Copied to clipboard!");
       });
     }
+
+    function playAudio(url) {
+      const audio = new Audio(url);
+      audio.play();
+    }
+
+    function clearResults() {
+      document.getElementById("wordInput").value = "";
+      document.getElementById("results").innerHTML = "";
+    }
+
+    // Optional: Press Enter to search
+    document.getElementById("wordInput").addEventListener("keypress", function(e) {
+      if (e.key === "Enter") lookupWord();
+    });
   </script>
 </body>
 </html>
