@@ -68,7 +68,7 @@
     <p><strong>How to Use:</strong></p>
     <ul>
       <li>Type a word in the input box and click "Search" or press Enter.</li>
-      <li>Click the <span style="color:#3498db;">speaker icon</span> to hear pronunciation.</li>
+      <li>Click the speaker icon to hear pronunciation.</li>
       <li>Click "Copy" to copy a definition to clipboard.</li>
       <li>Double-click any word in the results to look it up immediately.</li>
       <li>Click "Clear" to reset the search.</li>
@@ -95,7 +95,7 @@
 const searchSection = document.getElementById('searchSection');
 const aboutSection = document.getElementById('about');
 
-function showTab(tab) {
+function showTab(tab){
   if(tab==='search'){
     searchSection.style.display='block';
     aboutSection.classList.remove('visible');
@@ -110,11 +110,14 @@ function showTab(tab) {
 }
 
 async function lookupWord(wordParam){
-  const inputWord = wordParam || document.getElementById("wordInput").value.trim();
+  let inputWord = wordParam || document.getElementById("wordInput").value.trim();
   const resultsDiv = document.getElementById("results");
   resultsDiv.innerHTML="";
 
   if(!inputWord){ resultsDiv.innerHTML="<p class='error'>Please enter a word.</p>"; return; }
+
+  // Remove punctuation for API lookup
+  inputWord = inputWord.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?"']/g,"");
 
   try {
     const res = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${inputWord}`);
@@ -134,11 +137,8 @@ async function lookupWord(wordParam){
       meaning.definitions.forEach(def=>{
         const defText = def.definition;
         const exampleText = def.example || "";
-
-        // Wrap each word in spans for dblclick lookup
-        const defHtml = defText.split(" ").map(word=>`<span class="word-span" ondblclick="lookupWord('${word.replace(/'/g,"\\'")}')">${word}</span>`).join(" ");
-        const exampleHtml = exampleText.split(" ").map(word=>`<span class="word-span" ondblclick="lookupWord('${word.replace(/'/g,"\\'")}')">${word}</span>`).join(" ");
-
+        const defHtml = defText.split(" ").map(word=>`<span class="word-span" ondblclick="lookupWord('${word.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?"']/g,'')}')">${word}</span>`).join(" ");
+        const exampleHtml = exampleText.split(" ").map(word=>`<span class="word-span" ondblclick="lookupWord('${word.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?"']/g,'')}')">${word}</span>`).join(" ");
         html += `<div class="definition">
           <button class="copy-btn" onclick="copyText(\`${defText.replace(/`/g,"\\`")}\`)">Copy</button>
           <h3>${meaning.partOfSpeech}</h3>
@@ -156,24 +156,10 @@ async function lookupWord(wordParam){
 }
 
 function copyText(text){ navigator.clipboard.writeText(text).then(()=>{alert("Copied to clipboard!");}); }
-
 function playAudio(url){ const audio = new Audio(url); audio.play(); }
-
-function speakText(text){
-  if('speechSynthesis' in window){
-    const utter = new SpeechSynthesisUtterance(text);
-    window.speechSynthesis.speak(utter);
-  } else alert("Text-to-Speech not supported in this browser.");
-}
-
-function clearResults(){
-  document.getElementById("wordInput").value="";
-  document.getElementById("results").innerHTML="";
-}
-
-document.getElementById("wordInput").addEventListener("keypress", function(e){
-  if(e.key==="Enter") lookupWord();
-});
+function speakText(text){ if('speechSynthesis' in window){ const utter = new SpeechSynthesisUtterance(text); window.speechSynthesis.speak(utter); } else alert("Text-to-Speech not supported."); }
+function clearResults(){ document.getElementById("wordInput").value=""; document.getElementById("results").innerHTML=""; }
+document.getElementById("wordInput").addEventListener("keypress", function(e){ if(e.key==="Enter") lookupWord(); });
 </script>
 </body>
 </html>
