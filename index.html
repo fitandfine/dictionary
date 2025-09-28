@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dictionary Lookup</title>
+  <style>
+    /* General Reset */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #eef2f3, #dfe9f3);
+      color: #333;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 40px;
+    }
+
+    .container {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 700px;
+      padding: 30px;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 2rem;
+      margin-bottom: 20px;
+      color: #2c3e50;
+    }
+
+    .search-box {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 25px;
+    }
+
+    .search-box input {
+      flex: 1;
+      padding: 12px 15px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 1rem;
+      outline: none;
+      transition: 0.2s;
+    }
+
+    .search-box input:focus {
+      border-color: #3498db;
+      box-shadow: 0 0 0 2px rgba(52,152,219,0.2);
+    }
+
+    .search-box button {
+      background: #3498db;
+      color: #fff;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .search-box button:hover {
+      background: #2980b9;
+    }
+
+    .results {
+      margin-top: 20px;
+    }
+
+    .word {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #2c3e50;
+      margin-bottom: 10px;
+    }
+
+    .phonetic {
+      color: #666;
+      margin-bottom: 20px;
+    }
+
+    .definition {
+      background: #f8f9fa;
+      border: 1px solid #eaeaea;
+      border-radius: 12px;
+      padding: 15px;
+      margin-bottom: 15px;
+      position: relative;
+    }
+
+    .definition h3 {
+      font-size: 1.1rem;
+      margin-bottom: 8px;
+      color: #34495e;
+    }
+
+    .definition p {
+      margin-bottom: 6px;
+      line-height: 1.5;
+    }
+
+    .copy-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: #eee;
+      border: none;
+      padding: 5px 10px;
+      font-size: 0.8rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .copy-btn:hover {
+      background: #ddd;
+    }
+
+    .error {
+      color: #e74c3c;
+      font-weight: bold;
+      margin-top: 15px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Dictionary Lookup</h1>
+    <div class="search-box">
+      <input type="text" id="wordInput" placeholder="Enter a word..."/>
+      <button onclick="lookupWord()">Search</button>
+    </div>
+    <div id="results" class="results"></div>
+  </div>
+
+  <script>
+    async function lookupWord() {
+      const word = document.getElementById("wordInput").value.trim();
+      const resultsDiv = document.getElementById("results");
+      resultsDiv.innerHTML = "";
+
+      if (!word) {
+        resultsDiv.innerHTML = "<p class='error'>Please enter a word.</p>";
+        return;
+      }
+
+      try {
+        const res = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`);
+        if (!res.ok) throw new Error("Word not found");
+        const data = await res.json();
+
+        const entry = data[0];
+        const phonetic = entry.phonetic || (entry.phonetics[0] ? entry.phonetics[0].text : "");
+
+        let html = `
+          <div class="word">${entry.word}</div>
+          <div class="phonetic">${phonetic || ""}</div>
+        `;
+
+        entry.meanings.forEach((meaning, index) => {
+          meaning.definitions.forEach((def, i) => {
+            const defText = def.definition;
+            html += `
+              <div class="definition">
+                <button class="copy-btn" onclick="copyText(\`${defText.replace(/`/g, "\\`")}\`)">Copy</button>
+                <h3>${meaning.partOfSpeech}</h3>
+                <p><strong>Definition:</strong> ${defText}</p>
+                ${def.example ? `<p><strong>Example:</strong> ${def.example}</p>` : ""}
+              </div>
+            `;
+          });
+        });
+
+        resultsDiv.innerHTML = html;
+      } catch (error) {
+        resultsDiv.innerHTML = `<p class="error">${error.message}</p>`;
+      }
+    }
+
+    function copyText(text) {
+      navigator.clipboard.writeText(text).then(() => {
+        alert("Copied to clipboard!");
+      });
+    }
+  </script>
+</body>
+</html>
