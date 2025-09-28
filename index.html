@@ -1,168 +1,81 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Dictionary Lookup</title>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-
-    body {
-      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #eef2f3, #dfe9f3);
-      color: #333;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 40px 20px;
-    }
-
-    .container {
-      background: #fff;
-      border-radius: 16px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-      width: 100%;
-      max-width: 700px;
-      padding: 30px;
-      display: flex;
-      flex-direction: column;
-    }
-
-    h1 {
-      text-align: center;
-      font-size: 2rem;
-      margin-bottom: 20px;
-      color: #2c3e50;
-    }
-
-    .search-box {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 20px;
-    }
-
-    .search-box input {
-      flex: 1;
-      padding: 12px 15px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      font-size: 1rem;
-      outline: none;
-      transition: 0.2s;
-    }
-
-    .search-box input:focus {
-      border-color: #3498db;
-      box-shadow: 0 0 0 2px rgba(52,152,219,0.2);
-    }
-
-    .search-box button {
-      background: #3498db;
-      color: #fff;
-      border: none;
-      padding: 12px 20px;
-      border-radius: 8px;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: 0.2s;
-    }
-
-    .search-box button:hover {
-      background: #2980b9;
-    }
-
-    #results {
-      margin-top: 20px;
-    }
-
-    .word {
-      font-size: 1.5rem;
-      font-weight: bold;
-      color: #2c3e50;
-      margin-bottom: 5px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .phonetic {
-      color: #666;
-      margin-bottom: 15px;
-    }
-
-    .definition {
-      background: #f8f9fa;
-      border: 1px solid #eaeaea;
-      border-radius: 12px;
-      padding: 15px;
-      margin-bottom: 15px;
-      position: relative;
-    }
-
-    .definition h3 {
-      font-size: 1.1rem;
-      margin-bottom: 8px;
-      color: #34495e;
-    }
-
-    .definition p {
-      margin-bottom: 6px;
-      line-height: 1.5;
-    }
-
-    .copy-btn, .clear-btn {
-      background: #eee;
-      border: none;
-      padding: 5px 10px;
-      font-size: 0.8rem;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: 0.2s;
-    }
-
-    .copy-btn:hover, .clear-btn:hover {
-      background: #ddd;
-    }
-
-    .copy-btn {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-    }
-
-    .speaker-btn {
-      background: none;
-      border: none;
-      cursor: pointer;
-      font-size: 1rem;
-      color: #3498db;
-    }
-
-    .error {
-      color: #e74c3c;
-      font-weight: bold;
-      margin-top: 15px;
-      text-align: center;
-    }
-
-    .credits {
-      margin-top: 30px;
-      font-size: 0.85rem;
-      text-align: center;
-      color: #666;
-    }
-
-    .clear-btn-container {
-      display: flex;
-      justify-content: flex-end;
-      margin-bottom: 10px;
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Dictionary Lookup</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #eef2f3, #dfe9f3);
+    color: #333;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px;
+  }
+  .container {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    width: 100%;
+    max-width: 700px;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+  }
+  h1 { text-align: center; font-size: 2rem; margin-bottom: 20px; color: #2c3e50; }
+  .tab-buttons { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; }
+  .tab-buttons button { background: #3498db; color: #fff; border: none; padding: 8px 15px; border-radius: 8px; cursor: pointer; transition: 0.2s; }
+  .tab-buttons button:hover { background: #2980b9; }
+  .tab-buttons button.active { background: #2c3e50; }
+  .search-box { display: flex; gap: 10px; margin-bottom: 20px; }
+  .search-box input { flex: 1; padding: 12px 15px; border: 1px solid #ccc; border-radius: 8px; font-size: 1rem; outline: none; transition: 0.2s; }
+  .search-box input:focus { border-color: #3498db; box-shadow: 0 0 0 2px rgba(52,152,219,0.2); }
+  .search-box button { background: #3498db; color: #fff; border: none; padding: 12px 20px; border-radius: 8px; font-size: 1rem; cursor: pointer; transition: 0.2s; }
+  .search-box button:hover { background: #2980b9; }
+  #results { margin-top: 20px; }
+  .word { font-size: 1.5rem; font-weight: bold; color: #2c3e50; margin-bottom: 5px; display: flex; align-items: center; gap: 10px; }
+  .phonetic { color: #666; margin-bottom: 15px; }
+  .definition { background: #f8f9fa; border: 1px solid #eaeaea; border-radius: 12px; padding: 15px; margin-bottom: 15px; position: relative; }
+  .definition h3 { font-size: 1.1rem; margin-bottom: 8px; color: #34495e; }
+  .definition p { margin-bottom: 6px; line-height: 1.5; cursor: text; }
+  .copy-btn, .clear-btn { background: #3498db; color: #fff; border: none; padding: 5px 10px; font-size: 0.8rem; border-radius: 6px; cursor: pointer; transition: 0.2s; }
+  .copy-btn:hover, .clear-btn:hover { background: #2980b9; }
+  .copy-btn { position: absolute; top: 10px; right: 10px; }
+  .speaker-btn { background: none; border: none; cursor: pointer; font-size: 1rem; color: #3498db; }
+  .error { color: #e74c3c; font-weight: bold; margin-top: 15px; text-align: center; }
+  .credits { margin-top: 30px; font-size: 0.85rem; text-align: center; color: #666; }
+  .clear-btn-container { display: flex; justify-content: flex-end; margin-bottom: 10px; }
+  .about { display: none; background: #f8f9fa; padding: 15px; border-radius: 12px; margin-bottom: 15px; line-height: 1.5; }
+  .visible { display: block; }
+  a { color: #3498db; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  span.word-span { cursor: pointer; }
+</style>
 </head>
 <body>
-  <div class="container">
-    <h1>Dictionary Lookup</h1>
+<div class="container">
+  <h1>Dictionary Lookup</h1>
+  <div class="tab-buttons">
+    <button id="searchTab" class="active" onclick="showTab('search')">Search</button>
+    <button id="aboutTab" onclick="showTab('about')">About</button>
+  </div>
+
+  <div id="about" class="about">
+    <p><strong>How to Use:</strong></p>
+    <ul>
+      <li>Type a word in the input box and click "Search" or press Enter.</li>
+      <li>Click the <span style="color:#3498db;">speaker icon</span> to hear pronunciation.</li>
+      <li>Click "Copy" to copy a definition to clipboard.</li>
+      <li>Double-click any word in the results to look it up immediately.</li>
+      <li>Click "Clear" to reset the search.</li>
+    </ul>
+  </div>
+
+  <div id="searchSection">
     <div class="search-box">
       <input type="text" id="wordInput" placeholder="Enter a word..."/>
       <button onclick="lookupWord()">Search</button>
@@ -172,80 +85,95 @@
     </div>
     <div id="results"></div>
   </div>
+</div>
 
-  <div class="credits">
-    Dictionary data by <a href="https://dictionaryapi.dev/" target="_blank">DictionaryAPI.dev</a> | Developed by Anup Chapain
-  </div>
+<div class="credits">
+  Dictionary data by <a href="https://dictionaryapi.dev/" target="_blank">DictionaryAPI.dev</a> | Developed by Anup Chapain
+</div>
 
-  <script>
-    async function lookupWord() {
-      const word = document.getElementById("wordInput").value.trim();
-      const resultsDiv = document.getElementById("results");
-      resultsDiv.innerHTML = "";
+<script>
+const searchSection = document.getElementById('searchSection');
+const aboutSection = document.getElementById('about');
 
-      if (!word) {
-        resultsDiv.innerHTML = "<p class='error'>Please enter a word.</p>";
-        return;
-      }
+function showTab(tab) {
+  if(tab==='search'){
+    searchSection.style.display='block';
+    aboutSection.classList.remove('visible');
+    document.getElementById('searchTab').classList.add('active');
+    document.getElementById('aboutTab').classList.remove('active');
+  } else {
+    searchSection.style.display='none';
+    aboutSection.classList.add('visible');
+    document.getElementById('searchTab').classList.remove('active');
+    document.getElementById('aboutTab').classList.add('active');
+  }
+}
 
-      try {
-        const res = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`);
-        if (!res.ok) throw new Error("Word not found");
-        const data = await res.json();
+async function lookupWord(wordParam){
+  const inputWord = wordParam || document.getElementById("wordInput").value.trim();
+  const resultsDiv = document.getElementById("results");
+  resultsDiv.innerHTML="";
 
-        const entry = data[0];
-        const phonetic = entry.phonetic || (entry.phonetics[0] ? entry.phonetics[0].text : "");
-        const audioUrl = entry.phonetics.find(p => p.audio)?.audio || null;
+  if(!inputWord){ resultsDiv.innerHTML="<p class='error'>Please enter a word.</p>"; return; }
 
-        let html = `
-          <div class="word">
-            ${entry.word} 
-            ${audioUrl ? `<button class="speaker-btn" onclick="playAudio('${audioUrl}')">&#128266;</button>` : ""}
-          </div>
-          <div class="phonetic">${phonetic || ""}</div>
-        `;
+  try {
+    const res = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${inputWord}`);
+    if(!res.ok) throw new Error("Word not found");
+    const data = await res.json();
+    const entry = data[0];
+    const phonetic = entry.phonetic || (entry.phonetics[0]? entry.phonetics[0].text:"");
+    const audioUrl = entry.phonetics.find(p=>p.audio)?.audio || null;
 
-        entry.meanings.forEach((meaning) => {
-          meaning.definitions.forEach((def) => {
-            const defText = def.definition;
-            html += `
-              <div class="definition">
-                <button class="copy-btn" onclick="copyText(\`${defText.replace(/`/g, "\\`")}\`)">Copy</button>
-                <h3>${meaning.partOfSpeech}</h3>
-                <p><strong>Definition:</strong> ${defText}</p>
-                ${def.example ? `<p><strong>Example:</strong> ${def.example}</p>` : ""}
-              </div>
-            `;
-          });
-        });
+    let html = `<div class="word">${entry.word} 
+      ${audioUrl?`<button class="speaker-btn" onclick="playAudio('${audioUrl}')">&#128266;</button>`:""}
+      <button class="speaker-btn" onclick="speakText('${entry.word}')">&#127911;</button>
+      </div>
+      <div class="phonetic">${phonetic||""}</div>`;
 
-        resultsDiv.innerHTML = html;
+    entry.meanings.forEach(meaning=>{
+      meaning.definitions.forEach(def=>{
+        const defText = def.definition;
+        const exampleText = def.example || "";
 
-      } catch (error) {
-        resultsDiv.innerHTML = `<p class="error">${error.message}</p>`;
-      }
-    }
+        // Wrap each word in spans for dblclick lookup
+        const defHtml = defText.split(" ").map(word=>`<span class="word-span" ondblclick="lookupWord('${word.replace(/'/g,"\\'")}')">${word}</span>`).join(" ");
+        const exampleHtml = exampleText.split(" ").map(word=>`<span class="word-span" ondblclick="lookupWord('${word.replace(/'/g,"\\'")}')">${word}</span>`).join(" ");
 
-    function copyText(text) {
-      navigator.clipboard.writeText(text).then(() => {
-        alert("Copied to clipboard!");
+        html += `<div class="definition">
+          <button class="copy-btn" onclick="copyText(\`${defText.replace(/`/g,"\\`")}\`)">Copy</button>
+          <h3>${meaning.partOfSpeech}</h3>
+          <p><strong>Definition:</strong> ${defHtml}</p>
+          ${exampleText?`<p><strong>Example:</strong> ${exampleHtml}</p>`:""}
+          </div>`;
       });
-    }
-
-    function playAudio(url) {
-      const audio = new Audio(url);
-      audio.play();
-    }
-
-    function clearResults() {
-      document.getElementById("wordInput").value = "";
-      document.getElementById("results").innerHTML = "";
-    }
-
-    // Optional: Press Enter to search
-    document.getElementById("wordInput").addEventListener("keypress", function(e) {
-      if (e.key === "Enter") lookupWord();
     });
-  </script>
+
+    resultsDiv.innerHTML = html;
+
+  } catch(err){
+    resultsDiv.innerHTML=`<p class="error">${err.message}</p>`;
+  }
+}
+
+function copyText(text){ navigator.clipboard.writeText(text).then(()=>{alert("Copied to clipboard!");}); }
+
+function playAudio(url){ const audio = new Audio(url); audio.play(); }
+
+function speakText(text){
+  if('speechSynthesis' in window){
+    const utter = new SpeechSynthesisUtterance(text);
+    window.speechSynthesis.speak(utter);
+  } else alert("Text-to-Speech not supported in this browser.");
+}
+
+function clearResults(){
+  document.getElementById("wordInput").value="";
+  document.getElementById("results").innerHTML="";
+}
+
+document.getElementById("wordInput").addEventListener("keypress", function(e){
+  if(e.key==="Enter") lookupWord();
+});
+</script>
 </body>
 </html>
